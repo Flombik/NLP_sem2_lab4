@@ -41,51 +41,55 @@ class TranslatorGUI:
         fill_mode_btn.pack()
 
     def translate_mode(self):
-        self.ask_for_file()
-        self.clear_frame()
-        text, api, db, trees = translate_file(self.file)
+        try:
+            self.ask_for_file()
+            self.clear_frame()
+            text, api, db, trees = translate_file(self.file)
 
-        tab_control = ttk.Notebook(self.master)
+            tab_control = ttk.Notebook(self.master)
 
-        tab1 = ttk.Frame(tab_control)
-        tab1_text = scrolledtext.ScrolledText(tab1)
-        tab1_text.insert(INSERT, text)
-        tab1_text.pack()
-        tab_control.add(tab1, text='Translated text')
+            tab1 = ttk.Frame(tab_control)
+            tab1_text = scrolledtext.ScrolledText(tab1)
+            tab1_text.insert(INSERT, text)
+            tab1_text.pack()
+            tab_control.add(tab1, text='Translated text')
 
-        def format_dict(_dict):
-            _text = ''
-            for _item, _freq in _dict.items():
-                _text += f'{_item}: {_freq};\n'
-            return _text
+            def format_dict(_dict):
+                _text = ''
+                for _item, _freq in _dict.items():
+                    _text += f'{_item}: {_freq};\n'
+                return _text
 
-        tab2 = ttk.Frame(tab_control)
-        tab2_text = scrolledtext.ScrolledText(tab2)
-        tab2_text.insert(INSERT, format_dict(api))
-        tab2_text.pack()
-        tab_control.add(tab2, text='Word frequencies (API)')
+            tab2 = ttk.Frame(tab_control)
+            tab2_text = scrolledtext.ScrolledText(tab2)
+            tab2_text.insert(INSERT, format_dict(api))
+            tab2_text.pack()
+            tab_control.add(tab2, text='Word frequencies (API)')
 
-        tab3 = ttk.Frame(tab_control)
-        tab3_text = scrolledtext.ScrolledText(tab3)
-        tab3_text.insert(INSERT, format_dict(db))
-        tab3_text.pack()
-        tab_control.add(tab3, text='Word frequencies (DB)')
+            tab3 = ttk.Frame(tab_control)
+            tab3_text = scrolledtext.ScrolledText(tab3)
+            tab3_text.insert(INSERT, format_dict(db))
+            tab3_text.pack()
+            tab_control.add(tab3, text='Word frequencies (DB)')
 
-        def show_tree(_tree):
-            for widget in tab4.winfo_children():
-                widget.destroy()
-                widget.pack_forget()
-            _txt = scrolledtext.ScrolledText(tab4)
-            _txt.insert(INSERT, _tree)
-            _txt.pack()
+            def show_tree(_tree):
+                for widget in tab4.winfo_children():
+                    widget.destroy()
+                    widget.pack_forget()
+                _txt = scrolledtext.ScrolledText(tab4)
+                _txt.insert(INSERT, _tree)
+                _txt.pack()
 
-        tab4 = ttk.Frame(tab_control)
-        for sent, tree in trees.items():
-            btn = Button(tab4, text=sent, command=lambda: show_tree(tree))
-            btn.pack()
-        tab_control.add(tab4, text='Tree')
+            tab4 = ttk.Frame(tab_control)
+            for sent, tree in trees.items():
+                btn = Button(tab4, text=sent, command=lambda: show_tree(tree))
+                btn.pack()
+            tab_control.add(tab4, text='Tree')
 
-        tab_control.pack(expand=1, fill='both')
+            tab_control.pack(expand=1, fill='both')
+        except Exception:
+            self.choose_mode()
+            messagebox.showerror('Error', 'Try to chose another file')
 
     def fill_mode(self):
         self.ask_for_file()
@@ -310,10 +314,11 @@ def init_argument_parser():
     action_group = parser.add_mutually_exclusive_group()
     action_group.add_argument('-F', '--fill', action='store_true',
                               help='''indicates that the file contains information
-                               to fill the database [using this mode by default]''',
+                               to fill the database''',
                               default=False)
     action_group.add_argument('-T', '--translate', action='store_true',
-                              help='indicates that the file contains text to translate', default=True)
+                              help='indicates that the file contains text to translate [using this mode by default]',
+                              default=True)
     parser.add_argument('--file', type=str, help='specify path to file')
 
     return parser
@@ -342,25 +347,3 @@ if __name__ == '__main__':
     conn = sqlite3.connect('PEREV.sqlite')
     cursor = conn.cursor()
     main()
-
-    # cursor.execute("""SELECT name FROM sqlite_master
-    #                 WHERE type='table'
-    #                 ORDER BY name;
-    #                 """)
-    # print(cursor.fetchone())
-
-    # cursor.execute("""
-    #     ALTER TABLE Dict
-    #     ADD WrdDeu varchar(100);""")
-    #
-    # cursor.execute("""
-    #     ALTER TABLE Func
-    #     ADD FTxtDeu varchar(200);""")
-    #
-    # cursor.execute("""
-    #     ALTER TABLE Pos
-    #     ADD PosDeu varchar(4);""")
-
-    # root = Tk()
-    # my_gui = TranslatorGUI(root)
-    # root.mainloop()
