@@ -36,10 +36,18 @@ When you click `Translate` or `Fill` button app asks you to choose source file.
 
 If you choose `Fill` option after fill operation you'll see message with results. If you choose `Translate` option after
 translate operation you'll see this window:
-![Main menu](./img/translate_window.png)
+![Translate window](./img/translate_window.png)
 Here 4 tabs:
 
 - translated text;
 - word frequencies from API translation;
 - word/func frequencies from DB translation;
 - tab with trees for text sentences.
+
+## DB Filling
+
+There are 2 file formats for filling the database: TXT and JSON.
+
+![TXT Format](./img/txt_filling.png)
+
+![JSON Format](./img/json_filling.png)

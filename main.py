@@ -46,7 +46,7 @@ class TranslatorGUI:
             self.clear_frame()
             text, api, db, trees = translate_file(self.file)
 
-            tab_control = ttk.Notebook(self.master)
+            tab_control = ttk.Notebook(self.master, width=640, height=360)
 
             tab1 = ttk.Frame(tab_control)
             tab1_text = scrolledtext.ScrolledText(tab1)
@@ -87,7 +87,11 @@ class TranslatorGUI:
             tab_control.add(tab4, text='Tree')
 
             tab_control.pack(expand=1, fill='both')
+
+            back_btn = Button(self.master, text='Back', command=self.choose_mode)
+            back_btn.pack()
         except Exception:
+            raise
             self.choose_mode()
             messagebox.showerror('Error', 'Try to chose another file')
 
@@ -162,17 +166,34 @@ def parse_json(file: TextIO):
     funcs = data['functions']
 
     for word in words:
-        source, destination, languages = word
-        commit_word(source, destination, languages=languages)
+        src = word['src']
+        dest = word['dest']
+        lang = word['lang']
+        commit_word(src, dest, languages=(lang['src'], lang['dest']))
 
     for func in funcs:
-        source, destination, positions, languages = func
-        commit_func(source, destination, positions, languages=languages)
+        src = func['src']
+        dest = func['dest']
+        pos = func['pos']
+        lang = func['lang']
+        commit_func(src, dest, pos, languages=(lang['src'], lang['dest']))
 
 
 def parse_legacy(file: TextIO):
     data = file.read()
-    print('legacy')
+    commands = data.split('\n\n')
+    for command in commands:
+        com, *args = command.split('\n')
+        if com.lower() == 'word':
+            src_word, dest_words, langs = args
+            src_lang, dest_lang = langs.split('->')
+            for word in dest_words.split(';'):
+                commit_word(src_word, word, (src_lang, dest_lang))
+        if com.lower() == 'func':
+            src_func, dest_func, pos, langs = args
+            src_lang, dest_lang = langs.split('->')
+            pos = [tuple(p.split('->')) for p in pos.split(';')]
+            commit_func(src_func, dest_func, pos, (src_lang, dest_lang))
 
 
 def parse_file(path_to_file: str):
