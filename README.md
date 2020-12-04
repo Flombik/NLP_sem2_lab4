@@ -31,12 +31,16 @@ optional arguments:
 * `--file` FILE specify path to file
 
 GUI looks like this:
+
 ![Main menu](./img/main_menu.png)
+
 When you click `Translate` or `Fill` button app asks you to choose source file.
 
 If you choose `Fill` option after fill operation you'll see message with results. If you choose `Translate` option after
 translate operation you'll see this window:
+
 ![Translate window](./img/translate_window.png)
+
 Here 4 tabs:
 
 - translated text;
